@@ -28,4 +28,9 @@ app.listen(3000, () => {
 //i will deploy this app on heroku so i will add start script in start scripts object in package.json file
 //and i will add engines object to specify the node.js version that heroku will deploy my app for.
 
-//push code to github: 1)execute command "git init" on project root directory 2)create github repo.
+//push code to github: 1)execute command "git init" on project root directory 2)create github repo. 3)prepare your commit with "Init commit" message
+//4)git remote add origin git@github.com:mohamedaligaber/node-course-2-chat-app.git  (to link our local repo to remote repo)
+//5)git push -u origin master
+
+
+//psuh our app to heroku : 1)heroku create (to create new app on heroku) 2)git push heroku (to push our code to heroku and deploy it online)
