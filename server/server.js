@@ -16,14 +16,16 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    socket.emit('newMessage', {
-      from: 'ali',
-      text: 'See you then.',
-      craetedAt: 121232
-    });
-
+    //now i can open multible browser tabs and see when i send message from the console of one tab it will be sent to the console of other tabs
+    //we will emit event "createMessage"  from the console of our browser: socket.emit('createMessage', {from: 'mohamed', text: 'Hi I am mohamed'});
     socket.on('createMessage', (message) => {
         console.log('Create message: ', message);
+
+        io.emit('newMessage', {
+          from: message.from,
+          text: message.text,
+          createdAt: new Date().getTime()
+        });    //io handle all connections and emits events to all connections but socket emit event and handle one single connection
     });
 
     socket.on('disconnect', () => {
