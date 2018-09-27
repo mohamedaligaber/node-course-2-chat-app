@@ -7,18 +7,7 @@
   <body>
       <p>Welcome to the chat App</p>
 
-      <!-- here I imported the socket.io file to start create client connection here  -->
       <script src="socket.io/socket.io.js" ></script>
-      <script>
-          var socket = io();   //here i create an socket IO connection with the server and throw this variable i can send and accept data
-
-          socket.on('connect', () => {   //connect is client event which get called when
-            console.log('Connected to sever');
-          });
-
-          socket.on('disconnect', () => {   //this event fires when the connection to server disconected
-            console.log('disconnect from sever');
-          });
-      </script>
+      <script src="/js/index.js"></script>  <!-- we seperated the js code to standalone file -->
   </body>
 </html>
