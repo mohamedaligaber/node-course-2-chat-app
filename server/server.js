@@ -4,6 +4,12 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
+//install mocha and expect packages  "npm i mocha expect@1.20.2 --save-dev"
+//"npm i nodemon --save-dev" we installed nodemon before globally so any one will pull our code from github will need to install it. so we installed it as dev dependency
+//pattern : server/**/*.test.js  --> this pattern means inside directory called server from the root project folder, any subdirectory, any file ends by .test.js
+const {generateMessage} = require('./utils/message.js');
+
+
 const PORT = process.env.PORT || 3000;
 const publicPath = path.join(__dirname + '/../public');
 
@@ -16,44 +22,15 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    //challenge
-    socket.emit('newMessage', {
-      form: 'admin',
-      text: 'Welcome to the chat',
-      createdAt: new Date().getTime()
-    });
+    socket.emit('newMessage', generateMessage('admin', 'Welcome to the chat') );
 
-    //challenge
-    socket.broadcast.emit('newMessage', {
-      form: 'admin',
-      text: 'New user joined the chat',
-      createdAt: new Date().getTime()
-    });
+    socket.broadcast.emit('newMessage', generateMessage('admin', 'New user joined the chat') );
 
 
-    //now i can open multible browser tabs and see when i send message from the console of one tab it will be sent to the console of other tabs
-    //we will emit event "createMessage"  from the console of our browser: socket.emit('createMessage', {from: 'mohamed', text: 'Hi I am mohamed'});
     socket.on('createMessage', (message) => {
         console.log('Create message: ', message);
 
-        /*
-        io.emit('newMessage', {
-          from: message.from,
-          text: message.text,
-          createdAt: new Date().getTime()
-        });    //io handle all connections and emits events to all connections but socket emit event and handle one single connection
-        */
-
-        //in the previous example the message with i have emit to the server the server will emit it to the all sockets and me too io.emit()
-        //the next example the server will emit the message for all sockets except the emmitter for this message
-        socket.broadcast.emit('newMessage', {
-          from: message.from,
-          text: message.text,
-          createdAt: new Date().getTime()
-        });
-
-        //we test this events by run this statement "socket.emit('createMessage', {from : 'mohamed', text: 'Hi imam mohamed'} );" from console of browser tab, and see the event emitted to another browser tabs
-
+        socket.broadcast.emit('newMessage', generateMessage(message.from,  message.text) );
     });
 
     socket.on('disconnect', () => {
