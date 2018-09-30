@@ -12,4 +12,20 @@ socket.on('disconnect', function (message) {
 
 socket.on('newMessage', function (message) {
   console.log('newMessage : ', message);
+  var li = jQuery('<li></li>');  //creating html element by jQuery
+  li.text(`${message.from}: ${message.text} `);
+
+  jQuery('#messages').append(li);
+});
+
+
+jQuery('#message-form').on('submit', function (e) {   //e is event object
+    e.preventDefault();   //the submit event is refreshing the page and the preventDefault() function prevents this event from occur
+
+    socket.emit('createMessage', {
+        from: 'User',
+        text: jQuery('[name=message]').val()
+    }, function () {
+       //no implementation right now for acknowledgemenet
+    });
 });

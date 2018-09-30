@@ -4,9 +4,6 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
-//install mocha and expect packages  "npm i mocha expect@1.20.2 --save-dev"
-//"npm i nodemon --save-dev" we installed nodemon before globally so any one will pull our code from github will need to install it. so we installed it as dev dependency
-//pattern : server/**/*.test.js  --> this pattern means inside directory called server from the root project folder, any subdirectory, any file ends by .test.js
 const {generateMessage} = require('./utils/message.js');
 
 
@@ -18,6 +15,9 @@ var server = http.createServer(app);
 
 var io = socketIO(server);
 
+//acknowledgemenet means when the user or the server emits an event he didn't know if the event successfully emited to the other side or not, so acknowledgemenet is a
+//reply message from the listener to the eniter that every thing goes well.
+
 
 io.on('connection', (socket) => {
     console.log('New user connected');
@@ -27,10 +27,13 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('newMessage', generateMessage('admin', 'New user joined the chat') );
 
 
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callBack) => {  //here i defined a callBack function which will be called to acknowledge the client
         console.log('Create message: ', message);
 
-        socket.broadcast.emit('newMessage', generateMessage(message.from,  message.text) );
+        io.emit('newMessage', generateMessage(message.from,  message.text) );
+
+        callBack('acknowledgemenet message from server!');
+        //socket.broadcast.emit('newMessage', generateMessage(message.from,  message.text) );
     });
 
     socket.on('disconnect', () => {
