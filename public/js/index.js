@@ -30,10 +30,13 @@ socket.on('newLocationMessage', function (message) {
 jQuery('#message-form').on('submit', function (e) {   //e is event object
     e.preventDefault();
 
+    var messageTextBox =  jQuery('[name=message]');
+
     socket.emit('createMessage', {
         from: 'User',
-        text: jQuery('[name=message]').val()
+        text: messageTextBox.val()
     }, function () {
+        messageTextBox.val('');  //when the server acknowledge the message we will clear the text box
     });
 });
 
@@ -43,12 +46,17 @@ locationButton.on('click', function () {
     return alert('Geolocation not supported by your browser');
   }
 
+  locationButton.attr('disabled', 'disabled').text('Sending location...');  //by this line i can click send location button just one time.
+
   navigator.geolocation.getCurrentPosition(function (position) {
+      locationButton.removeAttr('disabled').text('Send location');  //the send location button will become clickable after the response return.
+
       socket.emit('createLocationMessage', {
         latitude: position.coords.latitude ,
         longitude: position.coords.longitude
       });
   }, function () {
+      locationButton.removeAttr('disabled').text('Send location');
       alert('Unable to fetch location.');
   });
 
