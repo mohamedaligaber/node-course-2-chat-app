@@ -10,24 +10,28 @@ socket.on('disconnect', function (message) {
 });
 
 socket.on('newMessage', function (message) {
-  console.log('newMessage : ', message);
-  var li = jQuery('<li></li>');  //creating html element by jQuery
-  li.text(`${message.from}: ${message.text} `);
+  //i get the moment.js file from node_modules and import it in index.html file to use it inside index.js file to format my timestamps
+  var formatedTime = moment(message.createdAt).format('h:mm a');
+
+  var li = jQuery('<li></li>');
+  li.text(`${message.from} ${formatedTime}: ${message.text} `);
 
   jQuery('#messages').append(li);
 });
 
 socket.on('newLocationMessage', function (message) {
+  var formatedTime = moment(message.createdAt).format('h:mm a');
+
   var li = jQuery('<li></li>');
   var a = jQuery('<a target="_blank">My current location</a>');
 
-  li.text(`${message.form}: `);   //why i set this value throw text not in jQuery('<li></li>'), to prevent any html injection.
-  a.attr('href', message.url);    //why i set this value throw attr, to prevent any html injection.
+  li.text(`${message.from} ${formatedTime}: `);
+  a.attr('href', message.url);
   li.append(a);
   jQuery('#messages').append(li);
 });
 
-jQuery('#message-form').on('submit', function (e) {   //e is event object
+jQuery('#message-form').on('submit', function (e) {
     e.preventDefault();
 
     var messageTextBox =  jQuery('[name=message]');
@@ -36,7 +40,7 @@ jQuery('#message-form').on('submit', function (e) {   //e is event object
         from: 'User',
         text: messageTextBox.val()
     }, function () {
-        messageTextBox.val('');  //when the server acknowledge the message we will clear the text box
+        messageTextBox.val('');
     });
 });
 
@@ -46,10 +50,10 @@ locationButton.on('click', function () {
     return alert('Geolocation not supported by your browser');
   }
 
-  locationButton.attr('disabled', 'disabled').text('Sending location...');  //by this line i can click send location button just one time.
+  locationButton.attr('disabled', 'disabled').text('Sending location...');
 
   navigator.geolocation.getCurrentPosition(function (position) {
-      locationButton.removeAttr('disabled').text('Send location');  //the send location button will become clickable after the response return.
+      locationButton.removeAttr('disabled').text('Send location');
 
       socket.emit('createLocationMessage', {
         latitude: position.coords.latitude ,
