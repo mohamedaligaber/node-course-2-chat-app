@@ -1,5 +1,24 @@
 var socket = io();
 
+//when new message come to the user i will move the scroll panel to the bottom
+//please check the sreenshoots 4,5,6 to understand the Heights
+function scrollToBottom () {
+  //selectors
+  var messages = jQuery('#messages');
+  var newMessage = messages.children('li:last-child');  //the message which is just added
+
+  //Heights
+  var clientHeight = messages.prop('clientHeight');  //prop() is function to get some properties throw the user browser
+  var scrollTop = messages.prop('scrollTop');
+  var scrollHeight = messages.prop('scrollHeight');
+  var newMessageHeight = newMessage.innerHeight();
+  var lastMessageHeight = newMessage.prev().innerHeight();
+
+  if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+    messages.scrollTop(scrollHeight);  //scrollTop() jQuery function to scroll to the specific place
+  }
+}
+
 socket.on('connect', function () {
   console.log('Connected to sever');
 
@@ -10,48 +29,32 @@ socket.on('disconnect', function (message) {
 });
 
 socket.on('newMessage', function (message) {
-var formatedTime = moment(message.createdAt).format('h:mm a');
-
-var template = jQuery('#message-template').html();   //html() function returns the html which insdie this(message-template) template
-var html = Mustache.render(template, {
-  text: message.text,
-  from: message.from,
-  createdAt: formatedTime
-}); //render() function returns the actual html code which i can append to any html element, second argment is object contains the data i want to inject inside my html template
-jQuery('#messages').append(html);
-
-/*
-  //i get the moment.js file from node_modules and import it in index.html file to use it inside index.js file to format my timestamps
   var formatedTime = moment(message.createdAt).format('h:mm a');
 
-  var li = jQuery('<li></li>');
-  li.text(`${message.from} ${formatedTime}: ${message.text} `);
+  var template = jQuery('#message-template').html();
+  var html = Mustache.render(template, {
+    text: message.text,
+    from: message.from,
+    createdAt: formatedTime
+  });
 
-  jQuery('#messages').append(li);
-*/
+  jQuery('#messages').append(html);
+  scrollToBottom();
+
 });
 
 socket.on('newLocationMessage', function (message) {
   var formatedTime = moment(message.createdAt).format('h:mm a');
 
-  var template = jQuery('#location-message-template').html();   //html() function returns the html which insdie this(message-template) template
+  var template = jQuery('#location-message-template').html();
   var html = Mustache.render(template, {
     from: message.from,
     createdAt: formatedTime,
     url: message.url
-  }); //render() function returns the actual html code which i can append to any html element, second argment is object contains the data i want to inject inside my html template
+  });
+
   jQuery('#messages').append(html);
-
-
-/*
-  var li = jQuery('<li></li>');
-  var a = jQuery('<a target="_blank">My current location</a>');
-
-  li.text(`${message.from} ${formatedTime}: `);
-  a.attr('href', message.url);
-  li.append(a);
-  jQuery('#messages').append(li);
-*/
+  scrollToBottom();
 });
 
 jQuery('#message-form').on('submit', function (e) {
