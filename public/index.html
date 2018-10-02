@@ -29,11 +29,41 @@
 
       </div>
 
+      <!-- creating a new template -->
+      <script id="message-template" type="text/template" >  <!-- the type attribute lets your editor and browser knows that it is an html template not js script -->
+          <!-- this is the syntax {{}}  -->
+          <li class="message">
+              <div class="message__title">
+                <h4>{{from}}</h4>
+                <span>{{createdAt}}</span>
+              </div>
+
+              <div class="message__body">
+                <p>{{text}}</p>
+              </div>
+          </li>
+      </script>
+
+      <script id="location-message-template" type="text/template" >
+          <!-- this is the syntax {{}}  -->
+          <li class="message">
+              <div class="message__title">
+                <h4>{{from}}</h4>
+                <span>{{createdAt}}</span>
+              </div>
+
+              <p>
+                <a href="{{url}}" target="_blank" >My current location</a>
+              </p>
+          </li>
+      </script>
+
 
 
       <script src="socket.io/socket.io.js" ></script>
       <script src="/js/libs/jquery-3.3.1.min.js" ></script>
       <script src="/js/libs/moment.js" ></script>
-      <script src="/js/index.js"></script>  <!-- we seperated the js code to standalone file -->
+      <script src="/js/libs/mustache.js" ></script>  <!-- it is a templating engine i download it from github and import it to use it in index.js file -->
+      <script src="/js/index.js"></script>
   </body>
 </html>
