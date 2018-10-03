@@ -1,31 +1,47 @@
 var socket = io();
 
-//when new message come to the user i will move the scroll panel to the bottom
-//please check the sreenshoots 4,5,6 to understand the Heights
 function scrollToBottom () {
   //selectors
   var messages = jQuery('#messages');
-  var newMessage = messages.children('li:last-child');  //the message which is just added
+  var newMessage = messages.children('li:last-child');
 
   //Heights
-  var clientHeight = messages.prop('clientHeight');  //prop() is function to get some properties throw the user browser
+  var clientHeight = messages.prop('clientHeight');
   var scrollTop = messages.prop('scrollTop');
   var scrollHeight = messages.prop('scrollHeight');
   var newMessageHeight = newMessage.innerHeight();
   var lastMessageHeight = newMessage.prev().innerHeight();
 
   if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
-    messages.scrollTop(scrollHeight);  //scrollTop() jQuery function to scroll to the specific place
+    messages.scrollTop(scrollHeight);
   }
 }
 
 socket.on('connect', function () {
-  console.log('Connected to sever');
+  var params = jQuery.deparam(window.location.search);
 
+  socket.emit('join', params , function (error) {
+      if (error) {
+        alert(error);
+          window.location.href = '/';  //if one of user parameters (name or room) is unvalid, i will redirect the user to the main page (index.html)
+      } else {
+        console.log('no errors');
+      }
+  });
 });
 
 socket.on('disconnect', function (message) {
   console.log('disconected from server');
+});
+
+socket.on('updateUserList', function (usersNames) {
+  var ol = jQuery('<ol></ol>');
+
+  usersNames.forEach( function (username) {
+      ol.append( jQuery('<li></li>').text(username) );   //don't forget put the value of new element li throw text() function to avoid html injection
+  });
+
+  jQuery('#users').html(ol);
 });
 
 socket.on('newMessage', function (message) {
