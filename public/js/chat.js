@@ -79,7 +79,7 @@ jQuery('#message-form').on('submit', function (e) {
     var messageTextBox =  jQuery('[name=message]');
 
     socket.emit('createMessage', {
-        from: 'User',
+      //  from: 'User',    will comment it cause i will but the acutal user name for each message
         text: messageTextBox.val()
     }, function () {
         messageTextBox.val('');
